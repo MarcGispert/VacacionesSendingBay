@@ -64,6 +64,16 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
 
+## Supabase Auth Redirect URLs (Production)
+
+When deploying to Vercel, make sure the Supabase project allows redirects to your production domain:
+
+- `https://vacaciones-sending-bay.vercel.app`
+
+You can set this in Supabase Dashboard → Authentication → URL Configuration:
+- Site URL: `https://vacaciones-sending-bay.vercel.app`
+- Redirect URLs: add the same domain (and any preview domains you use).
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!
