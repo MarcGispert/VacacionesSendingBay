@@ -334,7 +334,7 @@ export default function TeamCalendar() {
                               )}
                               title={`${vacation.user_name} - ${typeLabels[vacation.type]}`}
                             >
-                              {getDisplayName(vacation.user_name)}
+                              {vacation.type === 'birthday' ? `🎂 ${getDisplayName(vacation.user_name)}` : getDisplayName(vacation.user_name)}
                             </div>
                           ))}
                           {dayVacations.length > 3 && (
