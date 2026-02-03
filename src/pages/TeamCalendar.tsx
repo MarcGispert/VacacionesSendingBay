@@ -16,7 +16,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useAllVacations, useAllChristmasChoices, useChristmasOptions } from '@/hooks/useVacations';
+import { useAllVacations, useAllChristmasChoices, useChristmasOptions, useAllBirthdayDays } from '@/hooks/useVacations';
 
 const toLocalDate = (dateString: string) => new Date(`${dateString}T00:00:00`);
 
@@ -151,6 +151,7 @@ export default function TeamCalendar() {
   const selectedYear = currentMonth.getFullYear();
   const { data: christmasOptions = [] } = useChristmasOptions(selectedYear);
   const { data: christmasChoices = [] } = useAllChristmasChoices(selectedYear);
+  const { data: birthdayDays = [] } = useAllBirthdayDays(selectedYear);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -175,7 +176,18 @@ export default function TeamCalendar() {
     }];
   });
 
-  const allVacations = [...vacations, ...christmasVacations];
+  const birthdayVacations = birthdayDays.map((birthday) => ({
+    id: `birthday-${birthday.user_id}-${birthday.year}`,
+    user_id: birthday.user_id,
+    user_name: birthday.user_name || 'Usuario',
+    start_date: birthday.selected_date,
+    end_date: birthday.selected_date,
+    type: 'birthday' as const,
+    status: 'approved' as const,
+    created_at: birthday.selected_date,
+  }));
+
+  const allVacations = [...vacations, ...christmasVacations, ...birthdayVacations];
 
   const getVacationsForDay = (day: Date) => {
     return allVacations.filter(

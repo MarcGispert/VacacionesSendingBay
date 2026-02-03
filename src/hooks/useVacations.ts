@@ -43,6 +43,10 @@ export interface UserBirthdayDay {
   selected_date: string;
 }
 
+export interface UserBirthdayDayWithName extends UserBirthdayDay {
+  user_name?: string;
+}
+
 const toDateString = (date: Date) => format(date, 'yyyy-MM-dd');
 
 // Fetch all vacation requests (for calendar view)
@@ -360,6 +364,37 @@ export function useMyBirthdayDay(year: number) {
       return data as UserBirthdayDay | null;
     },
     enabled: !!user,
+  });
+}
+
+// Fetch all birthday days for a year (for team calendar)
+export function useAllBirthdayDays(year: number) {
+  return useQuery({
+    queryKey: ['birthday-day', 'all', year],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_birthday_days')
+        .select('*')
+        .eq('year', year);
+
+      if (error) throw error;
+
+      const birthdays = data as UserBirthdayDay[];
+      const userIds = [...new Set(birthdays.map((b) => b.user_id))];
+
+      const namesMap: Record<string, string> = {};
+      for (const userId of userIds) {
+        const { data: name, error: nameError } = await supabase.rpc('get_profile_name', { _user_id: userId });
+        if (!nameError && name) {
+          namesMap[userId] = name;
+        }
+      }
+
+      return birthdays.map((birthday) => ({
+        ...birthday,
+        user_name: namesMap[birthday.user_id] || 'Usuario',
+      })) as UserBirthdayDayWithName[];
+    },
   });
 }
 
