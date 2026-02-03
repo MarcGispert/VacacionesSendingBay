@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CheckEmail from "./pages/CheckEmail";
+import AuthCallback from "./pages/AuthCallback";
 import MyVacations from "./pages/MyVacations";
 import TeamCalendar from "./pages/TeamCalendar";
 import AdminPanel from "./pages/AdminPanel";
@@ -49,6 +50,7 @@ function AppRoutes() {
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/registro" element={<PublicRoute><Register /></PublicRoute>} />
       <Route path="/verifica-correo" element={<PublicRoute><CheckEmail /></PublicRoute>} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       
       {/* Protected routes */}
       <Route path="/mis-vacaciones" element={<ProtectedRoute><MyVacations /></ProtectedRoute>} />
