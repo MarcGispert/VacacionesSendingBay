@@ -69,10 +69,20 @@ Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and 
 When deploying to Vercel, make sure the Supabase project allows redirects to your production domain:
 
 - `https://vacaciones-sending-bay.vercel.app`
+ - `https://vacaciones-sending-bay.vercel.app/*`
+ - `http://localhost:5173`
 
 You can set this in Supabase Dashboard → Authentication → URL Configuration:
 - Site URL: `https://vacaciones-sending-bay.vercel.app`
 - Redirect URLs: add the same domain (and any preview domains you use).
+
+## Google OAuth (Supabase)
+
+Enable Google provider in Supabase Dashboard → Authentication → Providers → Google, then ensure Redirect URLs include:
+
+- `https://vacaciones-sending-bay.vercel.app`
+- `https://vacaciones-sending-bay.vercel.app/*`
+- `http://localhost:5173`
 
 ## Can I connect a custom domain to my Lovable project?
 
