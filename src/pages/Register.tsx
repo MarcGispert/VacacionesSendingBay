@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -17,6 +18,7 @@ export default function Register() {
   const { register, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +48,25 @@ export default function Register() {
     }
   };
 
+  const handleGoogleSignup = async () => {
+    setIsGoogleLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      setIsGoogleLoading(false);
+      toast({
+        title: 'Error',
+        description: 'No se pudo continuar con Google',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
@@ -60,6 +81,20 @@ export default function Register() {
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleSignup}
+              disabled={isLoading || isGoogleLoading}
+            >
+              {isGoogleLoading ? 'Conectando con Google...' : 'Continuar con Google'}
+            </Button>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="h-px flex-1 bg-border" />
+              <span>o</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="name">Nombre completo</Label>
               <Input
