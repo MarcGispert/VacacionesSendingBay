@@ -61,6 +61,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const handleOAuthRedirect = async () => {
+      const url = new URL(window.location.href);
+      const code = url.searchParams.get('code');
+      if (!code) return;
+
+      const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+      if (error) {
+        console.error('Error exchanging OAuth code for session:', error);
+        return;
+      }
+
+      // Clean up the URL so the code param doesn't persist
+      window.history.replaceState({}, document.title, window.location.pathname);
+    };
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -78,13 +93,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        const userData = await fetchUserProfile(session.user);
-        setUser(userData);
-      }
-      setIsLoading(false);
+    // Exchange OAuth code (if any), then check for existing session
+    handleOAuthRedirect().then(() => {
+      supabase.auth.getSession().then(async ({ data: { session } }) => {
+        if (session?.user) {
+          const userData = await fetchUserProfile(session.user);
+          setUser(userData);
+        }
+        setIsLoading(false);
+      });
     });
 
     return () => {
